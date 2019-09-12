@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>商品后台管理</title>
+	<link rel="stylesheet" type="text/css" href="../../static/admin/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../../static/admin/css/main.css">
+	<link rel="stylesheet" type="text/css" href='../../static/admin/css/jquery.pagination.css'>
+	<script type="text/javascript" src="../../static/admin/js/jquery-1.12.4.min.js"></script>
+	<script src="../../static/admin/js/jquery.pagination.min.js"></script>
+
+</head>
+<body>
+	<div class="breadcrub">
+			当前位置：产品管理>商品管理
+		</div>
+		<div class="pannel">
+			<table class="common_table">
+					<tr>
+                        <td colspan="3"><a href="/sadmin/addgood/" class="addtype">增加分类</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th width="10%">id</th>
+                        <th width="30%">商品名称</th>
+                        <th width="10%">商品价格</th>
+                        <th width="10%">商品库存</th>
+                        <th width="20%">商品pic</th>
+                        <th width="20%">管理操作</th>
+                    </tr>
+			</table>
+		</div>
+		<div id="pagination">
+
+		</div>
+</body>
+<script>
+    //获取分类内容
+    getGoodList(1)
+    function getGoodList(p) {
+        $.ajax({
+            url : '/sadmin/goodlist/',
+            type : 'get',
+            data:{'p':p},
+            dataType : 'json',
+            success:function (res) {
+                if(res.code ==='200'){
+                    var mes = res.goodlist
+                    var length = mes.length
+                    var html = '<tr><td colspan="6"><a href="/sadmin/addgood/" class="addtype">增加商品</a>' +
+                        '</td></tr> <tr> <th width="10%">id</th> <th width="20%">商品名称</th>' +
+                        '<th width="15%">商品价格</th><th width="15%">商品库存</th> <th width="20%">商品图片</th>' +
+                        '<th width="20%">管理操作</th></tr>'
+
+                    for (var i=0;i<length;i++){
+                        html +='<tr><td width="10%">'+mes[i]['id']+'</td><td width="20%">'+mes[i]['name']+'</td><td width="15%">'
+                        +mes[i]['price']+'</td><td width="15%">'+mes[i]['store']+'</td><td width="20%">'+mes[i]['pic']+'</td>'+
+                        '<td width="20%"><a href="/sadmin/addgood?newid='+mes[i]['id']+'">修改</a>' +
+                            ' <a href="/sadmin/deletegood?delid='+mes[i]['id']+'">删除</a></td></tr>'
+                    }
+                    $('.common_table').html(html)
+                    page(res.totalPage,res.currentPage)
+                }
+            }
+        })
+    }
+    function page(totalPage,currentPage) {
+        $('#pagination').pagination({
+            currentPage : currentPage,
+            totalPage : totalPage,
+            callback:function(p){
+                getGoodList(p)
+            }
+        })
+    }
+
+
+
+</script>
+
+
+</html>

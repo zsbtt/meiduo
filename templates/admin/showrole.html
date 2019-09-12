@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>权限设置后台管理</title>
+	<link rel="stylesheet" type="text/css" href="../../static/admin/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../../static/admin/css/main.css">
+	<link rel="stylesheet" type="text/css" href='../../static/admin/css/jquery.pagination.css'>
+	<script type="text/javascript" src="../../static/admin/js/jquery-1.12.4.min.js"></script>
+	<script src="../../static/admin/js/jquery.pagination.min.js"></script>
+
+</head>
+<body>
+	<div class="breadcrub">
+			当前位置：权限管理>角色管理
+		</div>
+		<div class="pannel">
+			<table class="common_table">
+					<tr>
+                        <td colspan="3"><a href="/sadmin/addrole/" class="addtype">增加角色</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th width="10%">id</th>
+                        <th width="70%">是否使用</th>
+                        <th width="20%">可用资源权限</th>
+                    </tr>
+			</table>
+		</div>
+		<div id="pagination">
+
+		</div>
+</body>
+<script>
+    //获取分类内容
+    getRoleList(1);
+    function getRoleList(p) {
+        $.ajax({
+            url : '/sadmin/rolelist/',
+            type : 'get',
+            data:{'p':p},
+            dataType : 'json',
+            success:function (res) {
+                if(res.code ==='200'){
+                    var mes = res.rolelist;
+{#                    var rr = res.rolelist.resource;#}
+                    var length = mes.length;
+                    var html = '<tr><td colspan="3"><a href="/sadmin/addrole/" class="addtype">增加角色</a> ' +
+                        '</td></tr> <tr> <th width="10%">id</th><th width="25%">角色名称</th><th width="25%">是否使用</th><th width="20%">可用资源权限</th><th width="20%">管理操作</th></tr>'
+                    for (var i=0;i<length;i++){
+                        html +='<tr><td width="10%">'+mes[i]['id']+'</td><td width="25%">'+mes[i]['name']+'</td><td width="25%">'+mes[i]['status']+'</td><td width="20%">'+mes[i]['resources']+'</td>'+
+                        '<td width="20%"><a href="/sadmin/addrole?newid='+mes[i]['id']+'">修改</a>' +
+                            ' <a href="/sadmin/deleterole?delid='+mes[i]['id']+'">删除</a></td></tr>'
+                    }
+                    $('.common_table').html(html)
+                    page(res.totalPage,res.currentPage)
+                }
+            }
+        })
+    }
+    function page(totalPage,currentPage) {
+        $('#pagination').pagination({
+            currentPage : currentPage,
+            totalPage : totalPage,
+            callback:function(p){
+                getRoleList(p)
+            }
+        })
+    }
+</script>
+
+
+</html>

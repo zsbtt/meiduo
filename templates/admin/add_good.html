@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品后台管理</title>
+    <link rel="stylesheet" type="text/css" href="../../static/admin/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="../../static/admin/css/main.css">
+    <script type="text/javascript" src="../../static/admin/js/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+    <div class="breadcrub">
+            当前位置：商品管理>添加商品
+        </div>
+        <div class="pannel">
+            <div class="news_review">
+
+            <h3 class="review_title">添加商品</h3>
+            <form id='form2' enctype="multipart/form-data">
+            <div class="form_group">
+                <label>商品名称：</label>
+                <input type="text" name="name" class="input_txt2" value="{{cate.name}}" width=100>
+            </div>
+            <div class="form_group">
+                <label>商品价格：</label>
+                <input type="text" name="price" class="input_txt2" value="{{cate.price}}" width=100>
+            </div>
+            <div class="form_group">
+                <label>商品库存：</label>
+                <input type="text" name="store" class="input_txt2" value="{{cate.store}}" width=100>
+            </div>
+                <div class="form_group">
+                <label>商品图片：</label>
+                <input type="file" name="pic" class="input_txt2" value="{{cate.descrip}}" width=100>
+            </div>
+
+             <div class="form_group">
+                <label>商品描述：</label>
+                <input type="text" name="descrip" class="input_txt2" value="{{cate.sales}}" width=100>
+            </div>
+                <div class="form_group">
+                <label>商品所属分类：</label>
+                <select name="cid_id" id="changes">
+                    {% for i in cates %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                    {% endfor %}
+                </select>
+
+            </div>
+            <div class="form_group">
+                <label>商品所属标签：</label>
+                <select name="tagid_id" id="getlist">
+
+                </select>
+
+            </div>
+
+            <div class="form_group">
+                <label>销量</label>
+                <input type="text" name="sales">
+            </div>
+            <input name='newid' value='{{ newid }}' type="hidden">
+            <div class="form_group indent_group line_top">
+                <input type="button" value="确定" class="confirm" onclick='addgood()'>
+                <input type="button" value="取消" class="cancel" onclick="cancel()">
+            </div>
+            </form>
+
+        </div>
+        </div>
+
+
+</body>
+<script>
+    getTagslist({{ cates.first.id }});
+    function getTagslist(cid_id) {
+        $.ajax({
+            url :'/sadmin/gettaglist/',
+            type:'post',
+            data:{'cid_id':cid_id},
+            success:function (res) {
+                if(res.code === '200'){
+                    var mes = res.taglist
+                    var length = mes.length
+                    var html = '';
+                    for (var i=0;i<length;i++){
+                        html +='<option value="'+mes[i]['id']+'">'+mes[i]['name']+'</option>'
+                    }
+                    $('#getlist').html(html)
+                }
+            }
+        })
+    }
+    $('#changes').change(
+        function(){
+            var cid_id = $(this).children('option:selected').val();
+            getTagslist(cid_id)
+        }
+    );
+    function addgood() {
+       $.ajax({
+           url:'/sadmin/submit_addgood/',
+           type:'post',
+           data:new FormData($('#form2')[0]),
+           cache:false,
+           contentType:false,
+           processData:false,
+           success:function (res) {
+               if(res.code === '200'){
+                    window.location.href='/sadmin/showgood/'
+               }
+           }
+   })
+   }
+
+
+</script>
+</html>
